@@ -1,0 +1,39 @@
+# Load required libraries
+install.packages(c("readxl", "tidyverse"))
+library(readxl)
+library(tidyverse)
+
+# Import the Excel file
+file_path <- "EYE_FOR_TOMORROWS_CHILDREN_-DATA CLEANING.xlsx"
+data <- read_excel(file_path, sheet = " EYE FOR TOMORROW'S CHILDREN")
+
+# View basic structure
+glimpse(data)
+
+# Summary statistics for numeric columns
+summary(data$`Your age`)
+
+# Count responses for a categorical question
+data %>%
+  count(`What is your nationality?`, sort = TRUE)
+
+# Age distribution histogram
+ggplot(data, aes(x = `Your age`)) +
+  geom_histogram(binwidth = 5, fill = "blue", color = "black") +
+  labs(title = "Age Distribution", x = "Age", y = "Frequency")
+
+# Bar plot for responses to "Have you ever heard about 'Eye for tomorrow's children'"
+ggplot(data, aes(x = `Have you ever heard about "Eye for tomorrow's children"`)) +
+  geom_bar(fill = "orange", color = "black") +
+  labs(title = "Awareness of 'Eye for Tomorrow's Children'", x = "Response", y = "Count")
+
+# Group analysis: Nationality vs Awareness
+data %>%
+  group_by(`What is your nationality?`, `Have you ever heard about "Eye for tomorrow's children"`) %>%
+  summarize(Count = n()) %>%
+  ggplot(aes(x = `What is your nationality?`, y = Count, fill = `Have you ever heard about "Eye for tomorrow's children"`)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Awareness by Nationality", x = "Nationality", y = "Count")
+
+# Save cleaned data if needed
+write.csv(data, "cleaned_data.csv")
